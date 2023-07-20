@@ -1,32 +1,46 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask
-
+from flask import Flask, render_template
 
 def create_app(test_config=None):
+    # Load environment variables from .env file
+    load_dotenv()
+
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        load_dotenv(),
-        app.config.setdefault('SECRET_KEY', 'dev'),
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
+        DATABASE=os.path.join(app.instance_path, 'schema.sqlite'),
+        DEBUG=True,  # Set the DEBUG configuration to True for development/testing
+        # Other instance-specific configurations can be added here
     )
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)  
-    # ensure the instance folder exists  
-    try:  
-        os.makedirs(app.instance_path)  
+    if test_config is not None:
+        # If test_config is provided, update the app's configuration with the test_config
+        app.config.from_mapping(test_config)
+
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
     except OSError:
         pass
 
-    from routes import user_routes
-    app.register_blueprint(user_routes.user_bp)
+    @app.route('/')
+    def index():
+        return render_template('loginLanding.html')
     
+ 
+    from .routes import user_routes
+    app.register_blueprint(user_routes.user_bp)
+
+    #for adiminLogin
+    from .routes import admin_routes
+    app.register_blueprint(admin_routes.admin_bp)
    
+    
+
+
+
+
 
     return app
