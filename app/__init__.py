@@ -1,4 +1,6 @@
 import os
+
+
 from dotenv import load_dotenv
 from flask import Flask, render_template
 
@@ -30,12 +32,15 @@ def create_app(test_config=None):
         return render_template('loginLanding.html')
     
  
-    from .routes import user_routes
-    app.register_blueprint(user_routes.user_bp)
+    # from .routes.user_routes import user_bp
+    # app.register_blueprint(user_bp)
+
+    from .routes.user_routes import user_bp
+    app.register_blueprint(user_bp)
 
     #for adiminLogin
-    from .routes import admin_routes
-    app.register_blueprint(admin_routes.admin_bp)
+    from .routes.admin_routes import admin_bp
+    app.register_blueprint(admin_bp)
    
     
 
