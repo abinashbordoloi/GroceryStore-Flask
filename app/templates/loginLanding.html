@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>GroveEase</title>
-    <h1 class="text-center">Welcome to GroveEase</h1>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body>
+<!-- loginlanding.html -->
+{% extends "base.html" %}
+
+{% block content %}
     <div class="container mt-5">
         <div class="row justify-content-center">
             <!-- User Login -->
@@ -19,7 +13,7 @@
                     <div class="card-body">
                         <p class="text-center">Welcome, User!</p>
                         <div class="text-center">
-                            <button class="btn btn-primary" onclick="loginAsUser()">Login as User</button>
+                            <a class="btn btn-primary" href="{{ url_for('user_bp.user_login') }}">Login as User</a>
                         </div>
                     </div>
                 </div>
@@ -33,25 +27,27 @@
                     <div class="card-body">
                         <p class="text-center">Welcome, Admin!</p>
                         <div class="text-center">
-                            <button class="btn btn-primary" onclick="loginAsAdmin()">Login as Admin</button>
+                            <a class="btn btn-primary" href="{{ url_for('admin_bp.admin_login') }}">Login as Admin</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function loginAsUser() {
-            // Redirect to the user login page
-            window.location.href = "/user_login";
-        }
 
-        function loginAsAdmin() {
-            // Redirect to the admin login page
-            window.location.href = "/admin_login";
-        }
-    </script>
-</body>
-</html>
+{% block extra_scripts %}
+<script>
+  // JavaScript function to hide the Sign In button on the loginLanding page
+  function hideSignInButtonOnLoginLanding() {
+    var signInButton = document.getElementById("signinButton");
+    if (signInButton) {
+      signInButton.style.display = "none";
+    }
+  }
+
+  // Run the function when the page loads
+  window.onload = hideSignInButtonOnLoginLanding;
+</script>
+{% endblock %}
