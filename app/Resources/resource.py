@@ -3,6 +3,14 @@ from ..models import *
 from flask import jsonify, g
 from app import db
 
+
+#test api
+class HelloWorld(Resource):
+    def get(self):
+        return {'message': 'Hello, this is a simple API!'}
+
+
+
 class CategoryResource(Resource):
     def get(self, category_id=None):
         if category_id:
@@ -18,9 +26,10 @@ class CategoryResource(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True, help='Category name is required')
+        parser.add_argument('description', type=str, required=True, help='Category description is required')
         args = parser.parse_args()
 
-        category = Category(name=args['name'])
+        category = Category(name=args['name'], description=args['description'])
 
         db.session.add(category)
         db.session.commit()
@@ -34,9 +43,11 @@ class CategoryResource(Resource):
 
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True, help='Category name is required')
+        parser.add_argument('description', type=str, required=True, help='Category description is required')
         args = parser.parse_args()
 
         category.name = args['name']
+        category.description = args['description']
         db.session.commit()
 
         return {'message': 'Category updated successfully', 'category': category.serialize()}
@@ -45,6 +56,12 @@ class CategoryResource(Resource):
         category = Category.query.get(category_id)
         if not category:
             return {'message': 'Category not found'}, 404
+
+        
+        # Check if the category has associated products
+        if category.products:
+            return jsonify({'message': 'Cannot delete category with associated products'}), 400
+     
 
         db.session.delete(category)
         db.session.commit()

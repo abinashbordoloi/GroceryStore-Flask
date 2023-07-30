@@ -4,12 +4,15 @@ from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_restful import Api
 
-
+# initialize the database
 db = SQLAlchemy()
-api = Api()
+from .resources import api as resources_api
 
 
-def create_app(test_config=None, db=db, api=api):
+
+
+
+def create_app(test_config=None):
     # Load environment variables from .env file
     load_dotenv()
 
@@ -17,7 +20,8 @@ def create_app(test_config=None, db=db, api=api):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
+        # SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
+        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'GroveEase.db'),
         DEBUG=True,
     )
     #print the SQLALCHEMY_DATABASE_URI
@@ -32,25 +36,40 @@ def create_app(test_config=None, db=db, api=api):
         pass
 
     
+
+
+    #import models
+    from .models import  User, Category, Product, Order, Cart
+
+
+
     #initialize the database
     db.init_app(app)
-    #initialize the api
-    api.init_app(app)
+    with app.app_context():
+        try:
+            db.create_all()
+            db.session.commit()
+            print("Tables created successfully.")
+        except Exception as e:
+            print("Error creating tables:", e)
+        
+    
+   
 
-
-#    #Register the models
-#     from .models import User, Category, Product, Order, Cart
+    
     
 
+    from .resources import resources_bp
+    app.register_blueprint(resources_bp)
 
-    #Register api resources
-    from .Resources.resource import CategoryResource, ProductResource, UserAuthResource, OrderResource, CartResource
-    api.add_resource(CategoryResource, '/api/categories', '/api/categories/<int:category_id>')
-    api.add_resource(ProductResource, '/api/products', '/api/products/<int:product_id>')
-    api.add_resource(UserAuthResource, '/api/users', '/api/users/<int:user_id>')
-    api.add_resource(OrderResource, '/api/orders', '/api/orders/<int:order_id>')
-    api.add_resource(CartResource, '/api/cart', '/api/cart/<int:cart_id>')
+    # Add the API resource routes
+    resources_api.init_app(app)
 
+    @app.route('/test')
+    def test_route():
+        return 'This is a test route.'
+    
+    
 
 
 
