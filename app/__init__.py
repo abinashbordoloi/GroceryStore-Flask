@@ -1,32 +1,24 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from flask import Flask, render_template
-from flask_restful import Api
+from flask import Flask
 
-# initialize the database
+# Initialize the database
 db = SQLAlchemy()
-from .resources import api as resources_api
-
-
-
-
 
 def create_app(test_config=None):
     # Load environment variables from .env file
     load_dotenv()
 
-    # create and configure the app
+    # Create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
-        # SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
         SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'GroveEase.db'),
         DEBUG=True,
     )
-    #print the SQLALCHEMY_DATABASE_URI
-    print(app.config['SQLALCHEMY_DATABASE_URI'])
 
+    # Load the instance config, if it exists, when not testing
     if test_config is not None:
         app.config.from_mapping(test_config)
 
@@ -35,15 +27,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    
-
-
-    #import models
-    from .models import  User, Category, Product, Order, Cart
-
-
-
-    #initialize the database
+    # Initialize the database
     db.init_app(app)
     with app.app_context():
         try:
@@ -52,26 +36,14 @@ def create_app(test_config=None):
             print("Tables created successfully.")
         except Exception as e:
             print("Error creating tables:", e)
-        
-    
-   
-
-    
-    
-
-    from .resources import resources_bp
-    app.register_blueprint(resources_bp)
 
     # Add the API resource routes
+    from .resources import api as resources_api
     resources_api.init_app(app)
 
-    @app.route('/test')
-    def test_route():
-        return 'This is a test route.'
+    # Add the frontend routes
+    from .routes import frontend, userAuth
+    app.register_blueprint(frontend.frontend_bp)
+    app.register_blueprint(userAuth.login_bp)
     
-    
-
-
-
-
     return app

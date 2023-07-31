@@ -34,7 +34,7 @@
                 </a>
                 {% endif %} -->
                 {% if not session.get('user_signed_in') %}
-                <a class="btn btn-primary ms-3" href="/login">
+                <a class="btn btn-primary ms-3" href="{{ url_for('login_bp.login_page') }}">
                     Sign In
                 </a>
                 {% endif %}
