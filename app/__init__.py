@@ -2,9 +2,18 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask import Flask
+from flask_bcrypt import Bcrypt
+
+from .routes import api_bp
+
+
+
+
+
 
 # Initialize the database
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 def create_app(test_config=None):
     # Load environment variables from .env file
@@ -27,6 +36,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+
     # Initialize the database
     db.init_app(app)
     with app.app_context():
@@ -36,14 +46,24 @@ def create_app(test_config=None):
             print("Tables created successfully.")
         except Exception as e:
             print("Error creating tables:", e)
+            db.session.rollback()
+    
 
-    # Add the API resource routes
-    from .resources import api as resources_api
+    # Initialize the bcrypt
+    bcrypt.init_app(app)
+
+    
+   
+    #register api endpoints
+    app.register_blueprint(api_bp)
+
+
+    # Initialize the resources api 
+    from .routes import api as resources_api
     resources_api.init_app(app)
 
-    # Add the frontend routes
-    from .routes import frontend, userAuth
-    app.register_blueprint(frontend.frontend_bp)
-    app.register_blueprint(userAuth.login_bp)
-    
+
+
+   
+
     return app
