@@ -2,29 +2,29 @@
 {% block content %}
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{url_for('admin')}}">Navbar</a>
+        <a class="navbar-brand" href="{{url_for('api_bp.adminresource')}}">Navbar</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav">
             <li class="nav-item active">
-              <a class="nav-link" href="{{url_for('admin')}}">product <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="{{url_for('api_bp.adminresource')}}">product <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">s
+              <a class="nav-link" href="{{url_for('api_bp.adminbrandresource')}}">brand</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{url_for('brands')}}">brand</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{url_for('categories')}}">catgory</a>
+              <a class="nav-link" href="{{url_for('api_bp.admincategoryresource')}}">catgory</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Add products
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="{{url_for('addproduct')}}">Add product</a>
-                <a class="dropdown-item" href="{{url_for('addbrand')}}">add brand</a>
-                <a class="dropdown-item" href="{{url_for('addcat')}}">add category</a>
+                <a class="dropdown-item" href="{{url_for('api_bp.productresource')}}">Add Product</a>
+                <a class="dropdown-item" href="{{url_for('api_bp.productbrandresource')}}">Add Brand</a>
+                <a class="dropdown-item" href="{{url_for('api_bp.productcategoryresource')}}">Add Category</a>
               </div>
             </li>
           </ul>
@@ -77,7 +77,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form action="{{url_for('deletecat',id=product.id)}}" method="post">
+                <form action="{{url_for('api_bp.productresource', product_id = product.id )}}" method="post">
                   <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
                 

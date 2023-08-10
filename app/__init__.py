@@ -1,19 +1,17 @@
 import os
-from flask_sqlalchemy import SQLAlchemy
+
 from dotenv import load_dotenv
 from flask import Flask
-from flask_bcrypt import Bcrypt
+from .routes import api_bp, search, photos, bcrypt
+from .models.models import db
+from werkzeug.utils import secure_filename
+# from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_class
+# from flask_uploads import UploadSet,configure_uploads,IMAGES,DATA,ALL
 
-from .routes import api_bp
-
-
-
-
-
-
+from werkzeug.utils import secure_filename
 # Initialize the database
-db = SQLAlchemy()
-bcrypt = Bcrypt()
+
+
 
 def create_app(test_config=None):
     # Load environment variables from .env file
@@ -24,6 +22,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
         SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'GroveEase.db'),
+
         DEBUG=True,
     )
 
@@ -35,7 +34,13 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+    
+    #configure the uploads
+    configure_uploads(app, photos)
+    patch_request_class(app)
 
+
+   
 
     # Initialize the database
     db.init_app(app)
@@ -51,6 +56,11 @@ def create_app(test_config=None):
 
     # Initialize the bcrypt
     bcrypt.init_app(app)
+
+    # Initialize the search
+    search.init_app(app)
+
+
 
     
    

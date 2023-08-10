@@ -1,7 +1,16 @@
 from flask import Blueprint
 from flask_restful import Api
+from flask_bcrypt import Bcrypt
+from flask_msearch import Search
+
+from flask_reuploads import UploadSet, IMAGES
 
 api_bp  = Blueprint('api_bp', __name__)
+
+
+bcrypt = Bcrypt()
+search = Search()
+photos = UploadSet('photos', IMAGES)
 
 
 
@@ -10,27 +19,25 @@ api_bp  = Blueprint('api_bp', __name__)
 # Create an instance of the Api
 api= Api(api_bp)
 
-from .apiResource import (
-    AppResource,
-    UserResource,
-    AdminResource,
-    LoginResource
-)
-
-api.add_resource(AppResource, '/')
-api.add_resource(LoginResource, '/login')
-api.add_resource(UserResource, '/user/login', '/api/user/<int:user_id>',)
-api.add_resource(AdminResource, '/admin/login', '/api/admin/<int:admin_id>',)
+# Import the resources to add routes to the api
+from .admin.adminAPI import AdminResource, AdminBrandResource, AdminCategoryResource, AdminRegistrationResource, AdminLoginResource
+from .products.productAPI import ProductResource, ProductBrandResource, ProductCategoryResource
 
 
 
+# Register your Admin-related Resource classes with URLs
+api.add_resource(AdminResource, '/admin')
+api.add_resource(AdminBrandResource, '/admin/brands')
+api.add_resource(AdminCategoryResource, '/admin/categories')
+api.add_resource(AdminRegistrationResource, '/admin/register')
+api.add_resource(AdminLoginResource, '/admin/login')
+
+api.add_resource(ProductResource, '/products', '/products/<int:product_id>')
+api.add_resource(ProductBrandResource, '/brands/<int:brand_id>')
+api.add_resource(ProductCategoryResource, '/categories/<int:category_id>')
+# Import the resources to add routes to the api
 
 
 
-# # Add resource classes to the Api
-# api.add_resource(CategoryResource, '/api/categories', '/api/categories/<int:category_id>')
-# api.add_resource(ProductResource, '/api/products', '/api/products/<int:product_id>')
-# api.add_resource(UserAuthResource, '/api/users', '/api/users/<int:user_id>')
-# api.add_resource(OrderResource, '/api/orders', '/api/orders/<int:order_id>')
-# api.add_resource(CartResource, '/api/cart', '/api/cart/<int:cart_id>')
-# api.add_resource(HelloWorld, '/api/hello')
+
+

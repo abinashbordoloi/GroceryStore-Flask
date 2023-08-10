@@ -1,16 +1,19 @@
 from flask import Flask, request, make_response, render_template, session, flash
 from flask_restful import Api, Resource
-from app.models import Register,CustomerOrder
+from app.models.models import Register,CustomerOrder
 #how to import stripe in flask
 import stripe
 from flask_login import login_required, current_user
-from app import db
+from ...models.models import db
 #how to import pdfkit in flask
 import pdfkit
 import secrets
 
 
 # Define your resource classes
+
+
+
 
 class PaymentResource(Resource):
     def post(self  ):
